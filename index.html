@@ -33,11 +33,11 @@
             display: flex; align-items: center; gap: 8px;
         }
 
-        /* North Arrow - Fixed Bottom Right */
+        /* North Arrow - Anchored Bottom Right */
         .north-arrow-container {
-            position: absolute;
-            bottom: 20px; 
-            right: 20px;
+            position: absolute !important;
+            bottom: 20px !important; 
+            right: 20px !important;
             z-index: 5000;
         }
         .north-arrow-svg {
@@ -46,24 +46,25 @@
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.4));
         }
 
-        /* Scale Ratio (1:Scale) - Fixed Bottom Left */
+        /* Fixed Scale Ratio - Anchored Bottom Left */
         .custom-scale-ratio {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 5000;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 10px;
-            border: 1px solid #333;
+            position: absolute !important;
+            bottom: 20px !important;
+            left: 20px !important;
+            z-index: 5001 !important;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 12px;
+            border: 1.5px solid #333;
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             color: #000;
             pointer-events: none;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Hide the default OpenLayers Scale Line if it appears elsewhere */
-        .ol-scale-line { display: none !important; }
+        /* Strict hide for any default OL scale elements */
+        .ol-scale-line, .ol-scale-bar { display: none !important; }
         </style>
         <title>Tayabas–Lucban Bypass Road Inventory</title>
     </head>
@@ -102,19 +103,29 @@
         <script src="./resources/qgis2web.js"></script>
         
         <script>
-            // Script to calculate and display the 1:Scale ratio dynamically
             function updateScale() {
-                var resolution = map.getView().getResolution();
-                var units = map.getView().getProjection().getUnits();
-                var dpi = 25.4 / 0.28; // Standard OGC DPI
-                var mpu = ol.proj.METERS_PER_UNIT[units];
-                var scale = resolution * mpu * 39.37 * dpi;
+                var view = map.getView();
+                var resolution = view.getResolution();
+                var projection = view.getProjection();
+                
+                // Calculate meters per unit at the center of the view for lat/long projections
+                var center = view.getCenter();
+                var mpu = projection.getMetersPerUnit();
+                
+                if (projection.getCode() === 'EPSG:4326') {
+                    // Adjust for latitude distortion in WGS84
+                    mpu = ol.proj.getPointResolution(projection, resolution, center) * (1/resolution);
+                }
+
+                var dpi = 25.4 / 0.28; // Standard 90.7 DPI
+                var inchesPerMeter = 39.37;
+                var scale = resolution * mpu * inchesPerMeter * dpi;
+                
                 document.getElementById('scale-ratio').innerHTML = "Scale 1:" + Math.round(scale).toLocaleString();
             }
 
-            // Update scale on every zoom change
             map.getView().on('change:resolution', updateScale);
-            updateScale(); // Initial call
+            updateScale();
         </script>
     </body>
 </html>
