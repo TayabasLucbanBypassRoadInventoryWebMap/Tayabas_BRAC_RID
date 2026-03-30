@@ -75,25 +75,6 @@
                     <div class="progress" style="height: 10px;"><div class="progress-bar" style="width: 10.3%; background-color: #1abc9c;"></div></div>
                 </div>
             </div>
-            
-            <div class="card p-4 text-center">
-                <h5>Elevation Statistics</h5>
-                <div class="mt-3">
-                    <div class="text-muted small">AVERAGE</div>
-                    <div class="h4 text-primary">220.0 m</div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-muted small">MIN</div>
-                            <div class="h5">131.4 m</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-muted small">MAX</div>
-                            <div class="h5">384.0 m</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -118,7 +99,6 @@
                     <div class="progress" style="height: 20px;">
                         <div class="progress-bar bg-success" style="width: 47.4%"></div>
                     </div>
-                    <p class="text-muted small mt-2">Inventory Data: 435 Asphalt | 387 Concrete</p>
                 </div>
             </div>
         </div>
@@ -126,7 +106,7 @@
 </div>
 
 <script>
-    // Barangay Chart with Full Dataset
+    // Data from Table A.1
     new Chart(document.getElementById('barangayChart'), {
         type: 'bar',
         data: {
@@ -137,13 +117,10 @@
                 backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#1abc9c', '#7f8c8d', '#34495e', '#95a5a6']
             }]
         },
-        options: { 
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, title: { display: true, text: 'Length (km)' } } }
-        }
+        options: { plugins: { legend: { display: false } } }
     });
 
-    // Condition Chart
+    // Data from Table A.3
     new Chart(document.getElementById('conditionChart'), {
         type: 'pie',
         data: {
