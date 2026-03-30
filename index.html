@@ -33,7 +33,7 @@
             display: flex; align-items: center; gap: 8px;
         }
 
-        /* North Arrow - Anchored Bottom Right */
+        /* North Arrow - Bottom Right */
         .north-arrow-container {
             position: absolute !important;
             bottom: 20px !important; 
@@ -41,12 +41,11 @@
             z-index: 5000;
         }
         .north-arrow-svg {
-            width: 55px;
-            height: 55px;
+            width: 55px; height: 55px;
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.4));
         }
 
-        /* Fixed Scale Ratio - Anchored Bottom Left */
+        /* Scale Ratio - Bottom Left */
         .custom-scale-ratio {
             position: absolute !important;
             bottom: 20px !important;
@@ -60,11 +59,9 @@
             font-weight: bold;
             color: #000;
             pointer-events: none;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Strict hide for any default OL scale elements */
-        .ol-scale-line, .ol-scale-bar { display: none !important; }
+        .ol-scale-line { display: none !important; }
         </style>
         <title>Tayabas–Lucban Bypass Road Inventory</title>
     </head>
@@ -73,9 +70,7 @@
             <a href="dashboard.html" class="dashboard-btn">
                 <i class="fas fa-chart-bar"></i> DASHBOARD
             </a>
-
             <div id="scale-ratio" class="custom-scale-ratio">Scale 1:---</div>
-
             <div class="north-arrow-container">
                 <svg class="north-arrow-svg" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="45" fill="white" fill-opacity="0.2" />
@@ -84,7 +79,6 @@
                     <text x="44" y="28" font-family="Arial" font-size="14" font-weight="bold" fill="black">N</text>
                 </svg>
             </div>
-
             <div id="popup" class="ol-popup">
                 <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                 <div id="popup-content"></div>
@@ -98,34 +92,48 @@
         <script src="./resources/ol.js"></script>
         <script src="./resources/ol-layerswitcher.js"></script>
         <script src="resources/photon-geocoder-autocomplete.min.js"></script>
-        <script src="layers/layers.js" type="text/javascript"></script> 
         <script src="./resources/Autolinker.min.js"></script>
+
+        <script src="layers/TayabasAdministrativeMap_1.js"></script>
+        <script src="layers/Elevation_2.js"></script>
+        <script src="layers/SurfaceType_3.js"></script>
+        <script src="layers/RoadCondition_4.js"></script>
+        <script src="layers/RoadClassification_5.js"></script>
+        <script src="layers/RoadinventoryDatabase_6.js"></script>
+        <script src="styles/TayabasAdministrativeMap_1_style.js"></script>
+        <script src="styles/Elevation_2_style.js"></script>
+        <script src="styles/SurfaceType_3_style.js"></script>
+        <script src="styles/RoadCondition_4_style.js"></script>
+        <script src="styles/RoadClassification_5_style.js"></script>
+        <script src="styles/RoadinventoryDatabase_6_style.js"></script>
+        <script src="./layers/layers.js" type="text/javascript"></script> 
+
         <script src="./resources/qgis2web.js"></script>
         
         <script>
             function updateScale() {
-                var view = map.getView();
-                var resolution = view.getResolution();
-                var projection = view.getProjection();
-                
-                // Calculate meters per unit at the center of the view for lat/long projections
-                var center = view.getCenter();
-                var mpu = projection.getMetersPerUnit();
-                
-                if (projection.getCode() === 'EPSG:4326') {
-                    // Adjust for latitude distortion in WGS84
-                    mpu = ol.proj.getPointResolution(projection, resolution, center) * (1/resolution);
+                if (typeof map !== 'undefined') {
+                    var view = map.getView();
+                    var resolution = view.getResolution();
+                    var projection = view.getProjection();
+                    var center = view.getCenter();
+                    var mpu = ol.proj.getPointResolution(projection, resolution, center) * (1/resolution);
+                    
+                    var dpi = 25.4 / 0.28; 
+                    var inchesPerMeter = 39.37;
+                    var scale = resolution * mpu * inchesPerMeter * dpi;
+                    
+                    document.getElementById('scale-ratio').innerHTML = "Scale 1:" + Math.round(scale).toLocaleString();
                 }
-
-                var dpi = 25.4 / 0.28; // Standard 90.7 DPI
-                var inchesPerMeter = 39.37;
-                var scale = resolution * mpu * inchesPerMeter * dpi;
-                
-                document.getElementById('scale-ratio').innerHTML = "Scale 1:" + Math.round(scale).toLocaleString();
             }
 
-            map.getView().on('change:resolution', updateScale);
-            updateScale();
+            // Small delay to ensure 'map' object is created by qgis2web.js
+            setTimeout(function() {
+                if (typeof map !== 'undefined') {
+                    map.getView().on('change:resolution', updateScale);
+                    updateScale();
+                }
+            }, 500);
         </script>
     </body>
 </html>
