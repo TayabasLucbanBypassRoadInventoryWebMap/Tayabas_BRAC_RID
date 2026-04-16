@@ -47,7 +47,7 @@
 
         /* UNIFIED BUTTON STYLE */
         .map-btn {
-            width: 200px; /* Fixed width for perfect alignment */
+            width: 200px; 
             padding: 14px 0;
             border-radius: 10px;
             text-decoration: none !important;
@@ -68,11 +68,11 @@
         }
 
         .report-btn {
-            background: #e67e22; /* Warning Orange */
+            background: #e67e22; 
         }
 
         .dashboard-btn {
-            background: #2b3d51; /* Professional Navy */
+            background: #2b3d51; 
         }
 
         .map-btn:hover {
@@ -81,9 +81,8 @@
             filter: brightness(1.1);
         }
 
-        /* Selection Mode Animation */
         .selecting-mode {
-            background: #c0392b !important; /* Deeper Red */
+            background: #c0392b !important;
             animation: pulse-red 1.5s infinite;
         }
 
@@ -151,7 +150,6 @@
             e.preventDefault();
             const btn = this;
             
-            // Enter Selection State
             btn.classList.add('selecting-mode');
             btn.innerHTML = '<i class="fas fa-crosshairs"></i> Select Segment...';
             
@@ -159,26 +157,24 @@
                 let roadId = "";
                 let roadOrder = "";
                 
-                // Identify the specific segment clicked
                 map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-                    // Pulls attributes from your RoadinventoryDatabase_6 layer
+                    // Pulling attributes from your RoadinventoryDatabase_6 layer
                     roadId = feature.get('ID') || feature.get('Road_ID') || "";
                     roadOrder = feature.get('Order') || feature.get('segment') || "";
                     return true; 
                 });
 
-                // Exit Selection State
                 btn.classList.remove('selecting-mode');
                 btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Report Road Issue';
 
-                // GOOGLE FORM REDIRECT
-                const formID = "1IDDEt_8yMShN3AUIeulcRMol6Bl1l6nwH4AO2P4tIhA";
+                // CORRECTED GOOGLE FORM REDIRECT
+                const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSdO1z3GxkdypTtoE0Se0K0U91IjFJhG2vx3qSh4X-ACnAd9Pg/viewform";
                 
-                // CRITICAL: Replace XXXXX and YYYYY with the entry IDs from your pre-filled link
+                // Replace these with your actual entry IDs found via "Get pre-filled link"
                 const entryUniqueId = "entry.XXXXXXX"; 
                 const entryOrder    = "entry.YYYYYYY"; 
 
-                const finalUrl = `https://docs.google.com/forms/d/e/${formID}/viewform?usp=pp_url&${entryUniqueId}=${encodeURIComponent(roadId)}&${entryOrder}=${encodeURIComponent(roadOrder)}`;
+                const finalUrl = `${formURL}?usp=pp_url&${entryUniqueId}=${encodeURIComponent(roadId)}&${entryOrder}=${encodeURIComponent(roadOrder)}`;
                 
                 window.open(finalUrl, '_blank');
             });
